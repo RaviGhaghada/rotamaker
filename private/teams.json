@@ -1,0 +1,6 @@
+[
+{"id": 1, "name": "Burlington Drifters", "manager": "Troy McLure", "rating": 100},
+{"id": 2, "name": "Salem Boulevardiers", "manager": "Martin Prince", "rating": 120},
+{"id": 3, "name": "Shelbyville Shelbyvillians", "manager": "Ralph Wiggum", "rating": 130},
+{"id": 4, "name": "Springfield Isotopes", "manager": "Lisa Simpson", "rating": 150}
+]
