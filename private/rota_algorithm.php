@@ -1,12 +1,9 @@
 <?php
 
-
-
 class RotaAlgorithm {
 
-    private $_priorities;
-    private $_decisions;
-    private $_date = "";
+    private $_priorities = array();
+        private $_date = "";
 
     /**
      * Constructor for the Rota Algorithm!
@@ -54,12 +51,13 @@ class RotaAlgorithm {
     private function run($pn) {
         // singleshift
         $s = $this->getFirstEmptyShift();
-
+        
         if ($s==null)
             return true;
 
         // ArrayList<Integer>
         $employees = $this->getSuitableEmployees($s);
+    
         // DecisionNode 
         $dn = new DecisionNode ($s, $employees, $pn);
 
@@ -92,7 +90,7 @@ class RotaAlgorithm {
         while ($c = mysqli_fetch_assoc($result)){
             $r = $c;
             mysqli_free_result($result);
-            return new SingleShift($r["shift_name"], $r["rdate"], $r["start_time"], $r["end_time"]);
+            return new SingleShift($r["shift_name"], "-1", $r["rdate"], $r["start_time"], $r["end_time"]);
         }
     }
 
@@ -124,7 +122,7 @@ class RotaAlgorithm {
 
         while ($rs = mysqli_fetch_assoc($result)){
             $shiftName = $rs["shift_name"];
-            for ($i = 0; $i < sizeof($datesOfWeek); $i++) {
+            for ($i = 0; $i < count($datesOfWeek); $i++) {
                 if ($i == 6 && $this->startsWith($shiftName, "S_")) {
                     QFunc::getQuery(sprintf($query, $shiftName, $datesOfWeek[$i]));
                 }
@@ -144,7 +142,7 @@ class RotaAlgorithm {
     public function getDatesOfWeek($dt){
         $dates = array_fill(0, 7, NULL);
         $dates[0] = $dt;
-        for ($i=0; $i < sizeof($dates); $i++) {
+        for ($i=0; $i < count($dates); $i++) {
            $dates[$i] = date("Y-m-d",strtotime($dt."+".$i." day"));
         }
         return $dates;
@@ -159,17 +157,17 @@ class RotaAlgorithm {
      */
     private function getSuitableEmployees($s){
 
-        fillPriorities($s);
+        $this->fillPriorities($s);
 
         $query = "SELECT DISTINCT e_id, min_hours, fair_hours FROM Employees";
 
-        for ($i=0; $i < sizeof($_priorities); $i++)
+        for ($i=0; $i < count($this->_priorities); $i++)
             $query = $query." INNER JOIN " + $_priorities[$i] + " USING (e_id)";
 
         $query = $query." ORDER BY (min_hours - fair_hours), RAND()";
 
         // Result Set
-        $result = $QFunc::getQuery();
+        $result = QFunc::getQuery($query);
 
         // array of integers
         $employees = array();
@@ -199,7 +197,7 @@ class RotaAlgorithm {
                 ." WHERE e_id NOT IN " 
                 ."(SELECT e_id FROM Unavailability "
                 ."WHERE ("
-                ."edate=" . $s->getRdate() + " AND ("
+                ."edate=" . $s->getRdate()." AND ("
                 ."(start_time>=".$s->getStartTime()." AND ".$s->getStartTime()
                 ."<=end_time) OR (start_time>=".$s->getEndTime()." AND ".$s->getEndTime()."<=end_time)))))a";
 

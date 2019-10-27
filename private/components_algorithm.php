@@ -19,7 +19,7 @@ class SingleShift {
      * @param startTime startTime of the shift
      * @param endTime endTime of the shift
      */
-    function __construct($shift_name, $eid, $rdate, $startTime, $endTime) {
+    function __construct(string $shift_name, string $eid, string $rdate, string $startTime, string $endTime) {
         $this->eid = $eid;
         $this->shift_name = $shift_name;
         $this->rdate = $rdate;
@@ -32,7 +32,7 @@ class SingleShift {
      * @return String name of the shift
      */
     public function getShift_name() {
-        return shift_name;
+        return $this->shift_name;
     }
 
     /**
@@ -125,7 +125,7 @@ class SingleShift {
         if ($this->eid == "-1")
             $q = sprintf($query, "NULL", $this->shift_name, $this->rdate);
         else {
-            $q = sprintf($query, $this->eid, $this->shift_name, $this->rdate);
+            $q = sprintf($query,  $this->eid, $this->shift_name, $this->rdate);
 
             $quick_query = "UPDATE Employees "
             ."SET fair_hours = fair_hours + (SELECT TIME_TO_SEC(TIMEDIFF(end_time, start_time))/3600 FROM ShiftType WHERE shift_name = '%s') " 
@@ -139,25 +139,25 @@ class SingleShift {
 class DecisionNode {
 
     // SingleShift
-    private $_shift;
+    private $shift;
 
     // Array of employee ids suitable for the shift
-    private $_eids;
+    private $eids;
 
     // Previous decision node
-    private $_parent;
+    private $parent;
     
     /**
      * Constructor for a decision node object
      * 
      * @param Singleshift object representing a shift
      * @param Array list of employee ids that can work the above shift
-     * @param DecisionNode previous decision node
+     * @param DecisionNode previous decision node or NULL
      */
-    function __construct($shift, $eids, $parent) {
-        $this->_shift = $shift;
-        $this->_eids = $eids;
-        $this->_parent = $parent;
+    function __construct(SingleShift $shift, array $eids, $parent) {
+        $this->shift = $shift;
+        $this->eids = $eids;
+        $this->parent = $parent;
     }
 
     /**
@@ -167,12 +167,12 @@ class DecisionNode {
      * @return boolean
      */
     public function canBackTrack(){
-        return !is_null($_parent);
+        return !is_null($parent);
     }
 
     public function backTrack(){
-        $this->_shift->setNullShift();
-        $this->_shift->updateSQL();
+        $this->shift->setNullShift();
+        $this->shift->updateSQL();
 
         $this->shift = $this->parent->shift;
         $this->eids = $this->eids;
@@ -185,11 +185,13 @@ class DecisionNode {
      * @return boolean true if employee assigned to shift, else false
      */
     public function consumeEmployee(){
-        if ($sizeof($eids)<1)
+        if (count($this->eids)<1)
             return false;
 
-        $shift->setEid(eids.remove(eids.size()-1));
-        $shift->updateSQL();
+        $id = $this->eids[count($this->eids)-1];
+        unset($this->eids[count($this->eids)-1]);
+        $this->shift->setEid($id);
+        $this->shift->updateSQL();
 
         return true;
     }

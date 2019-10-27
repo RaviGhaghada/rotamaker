@@ -7,13 +7,14 @@
 
       $result = mysqli_query($db, $sql);
       
-      // Test if query succeeded
+     
       if (!$result) {
-        echo "<br>Failure?? ".$sql;
-        //exit("Database query failed.");
+        //echo "<br>Failure?? ".$sql;
+        // ^only works if the query is of SELECT type
       }
-      else
-        echo "<br>Success: ".$sql;
+      else{
+        //echo "<br>Success: ".$sql;
+      }
 
       return $result;
     }
