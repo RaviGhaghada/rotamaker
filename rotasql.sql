@@ -1,0 +1,288 @@
+use rota;
+
+grant all privileges on rota.* to 'leon'@'localhost' identified by 'thaicurry';
+
+// INSERT TABLES
+
+CREATE TABLE Employees(
+	e_id INT NOT NULL,
+	e_name VARCHAR(20) NOT NULL,
+	type CHAR(4) NOT NULL,
+	level VARCHAR(10) NOT NULL,
+	CHECK (type IN ('FOH', 'BOH', 'TCH', 'SHF', 'KSH', 'MOM', 'SIS')),
+	CHECK (level IN ('training', 'basic', 'barista')),
+	
+	min_hours DOUBLE NOT NULL,
+	max_hours DOUBLE NOT NULL,
+
+	fair_hours DOUBLE DEFAULT 0,
+	CHECK (max_hours > min_hours), 
+	PRIMARY KEY (e_id)
+);	
+ALTER TABLE Employees AUTO_INCREMENT=1;
+
+CREATE TABLE ShiftType(
+	shift_name VARCHAR(20) NOT NULL,
+	start_time TIME NOT NULL,
+	end_time TIME NOT NULL,
+
+	PRIMARY KEY (shift_name)
+);
+
+CREATE TABLE Capability(
+	e_id INT NOT NULL,
+	shift_name VARCHAR(20) NOT NULL,
+
+	FOREIGN KEY (e_id) REFERENCES Employees(e_id),
+	FOREIGN KEY (shift_name) REFERENCES ShiftType(shift_name)
+);
+
+CREATE TABLE RotaTable(
+	shift_name VARCHAR(20) NOT NULL,
+
+	e_id INT NOT NULL,
+	rdate DATE NOT NULL,
+
+	UNIQUE INDEX (shift_name, e_id, date),
+
+	FOREIGN KEY (shift_name) REFERENCES ShiftType(shift_name),
+	FOREIGN KEY (e_id) REFERENCES Employees(e_id)
+);
+
+// A table for storing temporary values during generation of rota
+CREATE TABLE TempRota(
+	shift_name VARCHAR(20) NOT NULL,
+
+	e_id INT,
+	rdate DATE NOT NULL,
+
+	UNIQUE INDEX (shift_name, date),
+
+	FOREIGN KEY (shift_name) REFERENCES ShiftType(shift_name),
+	FOREIGN KEY (e_id) REFERENCES Employees(e_id)
+);
+
+// A table for storing the unavailability of employees
+CREATE TABLE Unavailability(
+	e_id INT NOT NULL,
+	edate DATE NOT NULL,
+	start_time TIME NOT NULL,
+	end_time TIME NOT NULL,
+
+	FOREIGN KEY (e_id) REFERENCES Employees(e_id)
+);
+
+// INSERT VALUES FOR EMPLOYEES
+
+INSERT INTO Employees values (1, 'Dereka', 'MOM', 'barista', 35, 52,0);
+
+INSERT INTO Employees values (2,'King', 'SHF', 'barista', 35, 52,0);
+INSERT INTO Employees values (3, 'Dielo', 'KSH', 'basic', 35, 52,0);
+
+INSERT INTO Employees values (4,'Agasta', 'FOH', 'basic', 35, 42,0);
+INSERT INTO Employees values (5,'Amine', 'FOH', 'barista', 35, 42,0);
+INSERT INTO Employees values (6,'Kate', 'FOH', 'basic', 35, 42,0);
+INSERT INTO Employees values (7,'Rishi', 'FOH', 'barista', 20, 25,0);
+INSERT INTO Employees values (8,'Fifu', 'FOH', 'basic', 28, 35,0);
+INSERT INTO Employees values (9,'Sally', 'FOH', 'training', 20, 25,0);
+INSERT INTO Employees values (10,'Sasha', 'FOH', 'barista', 28, 35,0);
+
+INSERT INTO Employees values (11,'Amantha', 'BOH', 'basic', 40, 52,0);
+INSERT INTO Employees values (12,'Berry', 'BOH', 'basic', 40, 52,0);
+INSERT INTO Employees values (13,'Billy', 'BOH', 'basic', 35, 42,0);
+INSERT INTO Employees values (14,'Martini', 'BOH', 'basic', 35, 42,0);
+INSERT INTO Employees values (15, 'Paul', 'BOH', 'basic', 40, 55,0);
+INSERT INTO Employees values (16,'Ricky', 'BOH', 'basic', 40, 55,0);
+
+INSERT INTO Employees values (17, 'Gail', 'FOH', 'barista', 40, 52,0);
+INSERT INTO Employees values (18, 'Nicolas', 'FOH', 'barista', 40, 52,0);
+
+// INSERT VALUES FOR SHIFTS
+
+INSERT INTO ShiftType VALUES('TILL_OP', '06:00', '14:00');
+INSERT INTO ShiftType VALUES('BARISTA', '06:30', '15:00');
+INSERT INTO ShiftType VALUES('TILL_2', '08:30', '15:00');
+INSERT INTO ShiftType VALUES('300', '12:30','19:00');
+INSERT INTO ShiftType VALUES('TILL_CL', '14:00', '23:00');
+INSERT INTO ShiftType VALUES('TILL_CL_2','15:00', '23:00');
+INSERT INTO ShiftType VALUES('BREAK_PASS', '06:00', '15:00');
+INSERT INTO ShiftType VALUES('BREAK_GRILL', '06:00', '15:00');
+INSERT INTO ShiftType VALUES('MID_PASS', '10:00', '16:00');
+INSERT INTO ShiftType VALUES('PASS_CL', '14:00', '23:00');
+INSERT INTO ShiftType VALUES('PASS_CL_2', '15:00','23:00');
+
+INSERT INTO ShiftType VALUES('S_TILL_OP', '07:30', '14:00');
+INSERT INTO ShiftType VALUES('S_BARISTA', '08:00', '15:00');
+INSERT INTO ShiftType VALUES('S_TILL_CL', '14:00', '21:00');
+INSERT INTO ShiftType VALUES('S_TILL_CL_2','15:00', '21:00');
+
+INSERT INTO ShiftType VALUES('S_BREAK_PASS', '07:30', '15:00');
+INSERT INTO ShiftType VALUES('S_BREAK_GRILL', '07:30', '15:00');
+INSERT INTO ShiftType VALUES('S_PASS_CL', '12:00', '21:00');
+INSERT INTO ShiftType VALUES('S_PASS_CL_2', '15:00','21:00');
+
+
+INSERT INTO Capability VALUES (4, 'TILL_OP');
+INSERT INTO Capability VALUES (5, 'TILL_OP');
+INSERT INTO Capability VALUES (6, 'TILL_OP');
+INSERT INTO Capability VALUES (7, 'TILL_OP');
+INSERT INTO Capability VALUES (8, 'TILL_OP');
+INSERT INTO Capability VALUES (9, 'TILL_OP');
+INSERT INTO Capability VALUES (10, 'TILL_OP');
+INSERT INTO Capability VALUES (17, 'TILL_OP');
+INSERT INTO Capability VALUES (18, 'TILL_OP');
+
+
+INSERT INTO Capability VALUES (5, 'BARISTA');
+INSERT INTO Capability VALUES (7, 'BARISTA');
+INSERT INTO Capability VALUES (10, 'BARISTA');
+INSERT INTO Capability VALUES (17, 'BARISTA');
+INSERT INTO Capability VALUES (18, 'BARISTA');
+
+INSERT INTO Capability VALUES (4, 'TILL_2');
+INSERT INTO Capability VALUES (5, 'TILL_2');
+INSERT INTO Capability VALUES (6, 'TILL_2');
+INSERT INTO Capability VALUES (7, 'TILL_2');
+INSERT INTO Capability VALUES (8, 'TILL_2');
+INSERT INTO Capability VALUES (9, 'TILL_2');
+INSERT INTO Capability VALUES (10, 'TILL_2');
+INSERT INTO Capability VALUES (17, 'TILL_2');
+INSERT INTO Capability VALUES (18, 'TILL_2');
+
+INSERT INTO Capability VALUES (4, '300');
+INSERT INTO Capability VALUES (5, '300');
+INSERT INTO Capability VALUES (6, '300');
+INSERT INTO Capability VALUES (7, '300');
+INSERT INTO Capability VALUES (8, '300');
+INSERT INTO Capability VALUES (9, '300');
+INSERT INTO Capability VALUES (10, '300');
+INSERT INTO Capability VALUES (17, '300');
+INSERT INTO Capability VALUES (18, '300');
+
+INSERT INTO Capability VALUES (4, 'TILL_CL');
+INSERT INTO Capability VALUES (5, 'TILL_CL');
+INSERT INTO Capability VALUES (6, 'TILL_CL');
+INSERT INTO Capability VALUES (7, 'TILL_CL');
+INSERT INTO Capability VALUES (8, 'TILL_CL');
+INSERT INTO Capability VALUES (9, 'TILL_CL');
+INSERT INTO Capability VALUES (10, 'TILL_CL');
+INSERT INTO Capability VALUES (17, 'TILL_CL');
+INSERT INTO Capability VALUES (18, 'TILL_CL');
+
+INSERT INTO Capability VALUES (4, 'TILL_CL_2');
+INSERT INTO Capability VALUES (5, 'TILL_CL_2');
+INSERT INTO Capability VALUES (6, 'TILL_CL_2');
+INSERT INTO Capability VALUES (7, 'TILL_CL_2');
+INSERT INTO Capability VALUES (8, 'TILL_CL_2');
+INSERT INTO Capability VALUES (9, 'TILL_CL_2');
+INSERT INTO Capability VALUES (10, 'TILL_CL_2');
+INSERT INTO Capability VALUES (17, 'TILL_CL_2');
+INSERT INTO Capability VALUES (18, 'TILL_CL_2');
+
+INSERT INTO Capability VALUES (4, 'S_TILL_OP');
+INSERT INTO Capability VALUES (5, 'S_TILL_OP');
+INSERT INTO Capability VALUES (6, 'S_TILL_OP');
+INSERT INTO Capability VALUES (7, 'S_TILL_OP');
+INSERT INTO Capability VALUES (8, 'S_TILL_OP');
+INSERT INTO Capability VALUES (9, 'S_TILL_OP');
+INSERT INTO Capability VALUES (10, 'S_TILL_OP');
+INSERT INTO Capability VALUES (17, 'S_TILL_OP');
+INSERT INTO Capability VALUES (18, 'S_TILL_OP');
+
+INSERT INTO Capability VALUES (5, 'S_BARISTA');
+INSERT INTO Capability VALUES (7, 'S_BARISTA');
+INSERT INTO Capability VALUES (10, 'S_BARISTA');
+INSERT INTO Capability VALUES (17, 'S_BARISTA');
+INSERT INTO Capability VALUES (18, 'S_BARISTA');
+
+INSERT INTO Capability VALUES (4, 'S_TILL_CL');
+INSERT INTO Capability VALUES (5, 'S_TILL_CL');
+INSERT INTO Capability VALUES (6, 'S_TILL_CL');
+INSERT INTO Capability VALUES (7, 'S_TILL_CL');
+INSERT INTO Capability VALUES (8, 'S_TILL_CL');
+INSERT INTO Capability VALUES (9, 'S_TILL_CL');
+INSERT INTO Capability VALUES (10, 'S_TILL_CL');
+INSERT INTO Capability VALUES (17, 'S_TILL_CL');
+INSERT INTO Capability VALUES (18, 'S_TILL_CL');
+
+INSERT INTO Capability VALUES (4, 'S_TILL_CL_2');
+INSERT INTO Capability VALUES (5, 'S_TILL_CL_2');
+INSERT INTO Capability VALUES (6, 'S_TILL_CL_2');
+INSERT INTO Capability VALUES (7, 'S_TILL_CL_2');
+INSERT INTO Capability VALUES (8, 'S_TILL_CL_2');
+INSERT INTO Capability VALUES (9, 'S_TILL_CL_2');
+INSERT INTO Capability VALUES (10, 'S_TILL_CL_2');
+INSERT INTO Capability VALUES (17, 'S_TILL_CL_2');
+INSERT INTO Capability VALUES (18, 'S_TILL_CL_2');
+
+INSERT INTO Capability VALUES (11, 'BREAK_PASS');
+INSERT INTO Capability VALUES (12, 'BREAK_PASS');
+INSERT INTO Capability VALUES (13, 'BREAK_PASS');
+INSERT INTO Capability VALUES (14, 'BREAK_PASS');
+INSERT INTO Capability VALUES (15, 'BREAK_PASS');
+INSERT INTO Capability VALUES (16, 'BREAK_PASS');
+INSERT INTO Capability VALUES (3, 'BREAK_PASS');
+
+INSERT INTO Capability VALUES (11, 'BREAK_GRILL');
+INSERT INTO Capability VALUES (12, 'BREAK_GRILL');
+INSERT INTO Capability VALUES (13, 'BREAK_GRILL');
+INSERT INTO Capability VALUES (14, 'BREAK_GRILL');
+INSERT INTO Capability VALUES (15, 'BREAK_GRILL');
+INSERT INTO Capability VALUES (16, 'BREAK_GRILL');
+INSERT INTO Capability VALUES (3, 'BREAK_GRILL');
+
+INSERT INTO Capability VALUES (11, 'MID_PASS');
+INSERT INTO Capability VALUES (12, 'MID_PASS');
+INSERT INTO Capability VALUES (13, 'MID_PASS');
+INSERT INTO Capability VALUES (14, 'MID_PASS');
+INSERT INTO Capability VALUES (15, 'MID_PASS');
+INSERT INTO Capability VALUES (16, 'MID_PASS');
+INSERT INTO Capability VALUES (3, 'MID_PASS');
+
+INSERT INTO Capability VALUES (11, 'PASS_CL');
+INSERT INTO Capability VALUES (12, 'PASS_CL');
+INSERT INTO Capability VALUES (13, 'PASS_CL');
+INSERT INTO Capability VALUES (14, 'PASS_CL');
+INSERT INTO Capability VALUES (15, 'PASS_CL');
+INSERT INTO Capability VALUES (16, 'PASS_CL');
+INSERT INTO Capability VALUES (3, 'PASS_CL');
+
+INSERT INTO Capability VALUES (11, 'PASS_CL_2');
+INSERT INTO Capability VALUES (12, 'PASS_CL_2');
+INSERT INTO Capability VALUES (13, 'PASS_CL_2');
+INSERT INTO Capability VALUES (14, 'PASS_CL_2');
+INSERT INTO Capability VALUES (15, 'PASS_CL_2');
+INSERT INTO Capability VALUES (16, 'PASS_CL_2');
+INSERT INTO Capability VALUES (3, 'PASS_CL_2');
+
+INSERT INTO Capability VALUES (11, 'S_BREAK_PASS');
+INSERT INTO Capability VALUES (12, 'S_BREAK_PASS');
+INSERT INTO Capability VALUES (13, 'S_BREAK_PASS');
+INSERT INTO Capability VALUES (14, 'S_BREAK_PASS');
+INSERT INTO Capability VALUES (15, 'S_BREAK_PASS');
+INSERT INTO Capability VALUES (16, 'S_BREAK_PASS');
+INSERT INTO Capability VALUES (3, 'S_BREAK_PASS');
+
+INSERT INTO Capability VALUES (11, 'S_BREAK_GRILL');
+INSERT INTO Capability VALUES (12, 'S_BREAK_GRILL');
+INSERT INTO Capability VALUES (13, 'S_BREAK_GRILL');
+INSERT INTO Capability VALUES (14, 'S_BREAK_GRILL');
+INSERT INTO Capability VALUES (15, 'S_BREAK_GRILL');
+INSERT INTO Capability VALUES (16, 'S_BREAK_GRILL');
+INSERT INTO Capability VALUES (3, 'S_BREAK_GRILL');
+
+INSERT INTO Capability VALUES (11, 'S_PASS_CL');
+INSERT INTO Capability VALUES (12, 'S_PASS_CL');
+INSERT INTO Capability VALUES (13, 'S_PASS_CL');
+INSERT INTO Capability VALUES (14, 'S_PASS_CL');
+INSERT INTO Capability VALUES (15, 'S_PASS_CL');
+INSERT INTO Capability VALUES (16, 'S_PASS_CL');
+INSERT INTO Capability VALUES (3, 'S_PASS_CL');
+
+INSERT INTO Capability VALUES (11, 'S_PASS_CL_2');
+INSERT INTO Capability VALUES (12, 'S_PASS_CL_2');
+INSERT INTO Capability VALUES (13, 'S_PASS_CL_2');
+INSERT INTO Capability VALUES (14, 'S_PASS_CL_2');
+INSERT INTO Capability VALUES (15, 'S_PASS_CL_2');
+INSERT INTO Capability VALUES (16, 'S_PASS_CL_2');
+INSERT INTO Capability VALUES (3, 'S_PASS_CL_2');
