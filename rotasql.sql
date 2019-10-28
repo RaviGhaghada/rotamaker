@@ -4,6 +4,8 @@ grant all privileges on rota.* to 'leon'@'localhost' identified by 'thaicurry';
 
 -- INSERT TABLES
 
+
+-- NOTE: instead of deleting an Employee entry, set the max_hours to zero
 CREATE TABLE Employees(
 	e_id INT NOT NULL,
 	e_name VARCHAR(20) NOT NULL,
@@ -21,11 +23,14 @@ CREATE TABLE Employees(
 );	
 ALTER TABLE Employees AUTO_INCREMENT=1;
 
+
+-- NOTE: instead of deleting a shift type, set the core to null
+-- that way older shift records can be accessed in table RotaTable
 CREATE TABLE ShiftType(
 	shift_name VARCHAR(20) NOT NULL,
 	start_time TIME NOT NULL,
 	end_time TIME NOT NULL,
-
+	core BOOLEAN NOT NULL DEFAULT 1,
 	PRIMARY KEY (shift_name)
 );
 
@@ -99,27 +104,27 @@ INSERT INTO Employees values (18, 'Nicolas', 'FOH', 'barista', 40, 52,0);
 
 -- INSERT VALUES FOR SHIFTS
 
-INSERT INTO ShiftType VALUES('TILL_OP', '06:00', '14:00');
-INSERT INTO ShiftType VALUES('BARISTA', '06:30', '15:00');
-INSERT INTO ShiftType VALUES('TILL_2', '08:30', '15:00');
-INSERT INTO ShiftType VALUES('300', '12:30','19:00');
-INSERT INTO ShiftType VALUES('TILL_CL', '14:00', '23:00');
-INSERT INTO ShiftType VALUES('TILL_CL_2','15:00', '23:00');
-INSERT INTO ShiftType VALUES('BREAK_PASS', '06:00', '15:00');
-INSERT INTO ShiftType VALUES('BREAK_GRILL', '06:00', '15:00');
-INSERT INTO ShiftType VALUES('MID_PASS', '10:00', '16:00');
-INSERT INTO ShiftType VALUES('PASS_CL', '14:00', '23:00');
-INSERT INTO ShiftType VALUES('PASS_CL_2', '15:00','23:00');
+INSERT INTO ShiftType VALUES('TILL_OP', '06:00', '14:00', 1);
+INSERT INTO ShiftType VALUES('BARISTA', '06:30', '15:00', 1);
+INSERT INTO ShiftType VALUES('TILL_2', '08:30', '15:00', 1);
+INSERT INTO ShiftType VALUES('300', '12:30','19:00', 1);
+INSERT INTO ShiftType VALUES('TILL_CL', '14:00', '23:00', 1);
+INSERT INTO ShiftType VALUES('TILL_CL_2','15:00', '23:00', 1);
+INSERT INTO ShiftType VALUES('BREAK_PASS', '06:00', '15:00', 1);
+INSERT INTO ShiftType VALUES('BREAK_GRILL', '06:00', '15:00', 1);
+INSERT INTO ShiftType VALUES('MID_PASS', '10:00', '16:00', 1);
+INSERT INTO ShiftType VALUES('PASS_CL', '14:00', '23:00', 1);
+INSERT INTO ShiftType VALUES('PASS_CL_2', '15:00','23:00', 1);
 
-INSERT INTO ShiftType VALUES('S_TILL_OP', '07:30', '14:00');
-INSERT INTO ShiftType VALUES('S_BARISTA', '08:00', '15:00');
-INSERT INTO ShiftType VALUES('S_TILL_CL', '14:00', '21:00');
-INSERT INTO ShiftType VALUES('S_TILL_CL_2','15:00', '21:00');
+INSERT INTO ShiftType VALUES('S_TILL_OP', '07:30', '14:00', 1);
+INSERT INTO ShiftType VALUES('S_BARISTA', '08:00', '15:00', 1);
+INSERT INTO ShiftType VALUES('S_TILL_CL', '14:00', '21:00', 1);
+INSERT INTO ShiftType VALUES('S_TILL_CL_2','15:00', '21:00', 1);
 
-INSERT INTO ShiftType VALUES('S_BREAK_PASS', '07:30', '15:00');
-INSERT INTO ShiftType VALUES('S_BREAK_GRILL', '07:30', '15:00');
-INSERT INTO ShiftType VALUES('S_PASS_CL', '12:00', '21:00');
-INSERT INTO ShiftType VALUES('S_PASS_CL_2', '15:00','21:00');
+INSERT INTO ShiftType VALUES('S_BREAK_PASS', '07:30', '15:00', 1);
+INSERT INTO ShiftType VALUES('S_BREAK_GRILL', '07:30', '15:00', 1);
+INSERT INTO ShiftType VALUES('S_PASS_CL', '12:00', '21:00', 1);
+INSERT INTO ShiftType VALUES('S_PASS_CL_2', '15:00','21:00', 1);
 
 
 INSERT INTO Capability VALUES (4, 'TILL_OP');
