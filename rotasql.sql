@@ -2,7 +2,7 @@ use rota;
 
 grant all privileges on rota.* to 'leon'@'localhost' identified by 'thaicurry';
 
-// INSERT TABLES
+-- INSERT TABLES
 
 CREATE TABLE Employees(
 	e_id INT NOT NULL,
@@ -43,26 +43,26 @@ CREATE TABLE RotaTable(
 	e_id INT NOT NULL,
 	rdate DATE NOT NULL,
 
-	UNIQUE INDEX (shift_name, e_id, date),
+	UNIQUE INDEX (shift_name, e_id, rdate),
 
 	FOREIGN KEY (shift_name) REFERENCES ShiftType(shift_name),
 	FOREIGN KEY (e_id) REFERENCES Employees(e_id)
 );
 
-// A table for storing temporary values during generation of rota
+-- A table for storing temporary values during generation of rota
 CREATE TABLE TempRota(
 	shift_name VARCHAR(20) NOT NULL,
 
 	e_id INT,
 	rdate DATE NOT NULL,
 
-	UNIQUE INDEX (shift_name, date),
+	UNIQUE INDEX (shift_name, rdate),
 
 	FOREIGN KEY (shift_name) REFERENCES ShiftType(shift_name),
 	FOREIGN KEY (e_id) REFERENCES Employees(e_id)
 );
 
-// A table for storing the unavailability of employees
+-- A table for storing the unavailability of employees
 CREATE TABLE Unavailability(
 	e_id INT NOT NULL,
 	edate DATE NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE Unavailability(
 	FOREIGN KEY (e_id) REFERENCES Employees(e_id)
 );
 
-// INSERT VALUES FOR EMPLOYEES
+-- INSERT VALUES FOR EMPLOYEES
 
 INSERT INTO Employees values (1, 'Dereka', 'MOM', 'barista', 35, 52,0);
 
@@ -97,7 +97,7 @@ INSERT INTO Employees values (16,'Ricky', 'BOH', 'basic', 40, 55,0);
 INSERT INTO Employees values (17, 'Gail', 'FOH', 'barista', 40, 52,0);
 INSERT INTO Employees values (18, 'Nicolas', 'FOH', 'barista', 40, 52,0);
 
-// INSERT VALUES FOR SHIFTS
+-- INSERT VALUES FOR SHIFTS
 
 INSERT INTO ShiftType VALUES('TILL_OP', '06:00', '14:00');
 INSERT INTO ShiftType VALUES('BARISTA', '06:30', '15:00');
