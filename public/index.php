@@ -7,4 +7,14 @@
     $rota = new RotaAlgorithm("2019-10-07");
 
     $rota->generateRota();
+
+	$table = getArrayedRota();
+
+	printTable($table);
+
 ?>
+
+<html>
+
+
+</html>

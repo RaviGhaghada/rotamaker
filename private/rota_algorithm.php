@@ -139,7 +139,7 @@ class RotaAlgorithm {
      * @param String first date YY-MM-DD
      * @return String[] first date and next 6 dates
      */
-    public function getDatesOfWeek($dt){
+    static public function getDatesOfWeek($dt){
         $dates = array_fill(0, 7, NULL);
         $dates[0] = $dt;
         for ($i=0; $i < count($dates); $i++) {

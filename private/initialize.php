@@ -12,8 +12,9 @@
 
     // yo we need a login page right before we go any further
     $db = Database::db_connect();
-
     require_once('../private/components_algorithm.php');
     require_once('../private/rota_algorithm.php');    
     
+
+	require_once('../private/display_functions.php');
 ?>
